@@ -1,0 +1,18 @@
+name: my-profile
+title: GCP InSpec Profile
+maintainer: The Authors
+copyright: The Authors
+copyright_email: you@example.com
+license: Apache-2.0
+summary: An InSpec Compliance Profile For GCP
+version: 0.1.0
+inspec_version: '>= 4'
+inputs:
+- name: resource_name
+  required: true
+  description: 'The Bucket name.'
+depends:
+- name: inspec-gcp
+  url: https://github.com/inspec/inspec-gcp/archive/refs/tags/v1.8.8.tar.gz
+supports:
+- platform: gcp

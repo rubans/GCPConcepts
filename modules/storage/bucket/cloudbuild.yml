@@ -1,0 +1,59 @@
+steps:
+- id: 'create-test-resource'
+  name: gcr.io/ps-cdf/cap-ci-cd-modules
+  dir: 'storage/bucket'
+  entrypoint: '/bin/sh'
+  args:
+   - '-c'
+   - |
+      kitchen converge
+- id: 'run-unit-test'
+  name: gcr.io/ps-cdf/cap-ci-cd-modules
+  dir: 'storage/bucket'
+  entrypoint: '/bin/sh'
+  args:
+   - '-c'
+   - |
+      kitchen verify
+- id: 'store-unit-test-report'
+  name: gcr.io/cloud-builders/gsutil
+  dir: 'storage/bucket'
+  args:
+   - mv
+   - output.json
+   - gs://ps-cdf-cap/reports/unit-test-${BUILD_ID}.json
+- id: 'run-compliance-test'
+  name: gcr.io/ps-cdf/cap-ci-cd-modules
+  dir: 'storage/bucket'
+  entrypoint: '/bin/sh'
+  args:
+   - '-c'
+   - |
+      cp -R /usr/app/* .
+      python3  prepare_compliance_test.py $$GIT_USER $$GIT_TOKEN
+      ls -lRt ./test/integration/default/
+      kitchen verify
+  secretEnv: ['GIT_USER', 'GIT_TOKEN']
+- id: 'destroy-test-resource'
+  name: gcr.io/ps-cdf/cap-ci-cd-modules
+  dir: 'storage/bucket'
+  entrypoint: '/bin/sh'
+  args:
+   - '-c'
+   - |
+      kitchen destroy
+- id: 'store-compliance-test-report'
+  name: gcr.io/cloud-builders/gsutil
+  dir: 'storage/bucket'
+  args:
+   - mv
+   - output.json
+   - gs://ps-cdf-cap/reports/compliance-test-${BUILD_ID}.json
+options:
+  logging: CLOUD_LOGGING_ONLY
+availableSecrets:
+  secretManager:
+    - versionName: projects/351149464006/secrets/ps-cdf-git-user/versions/1
+      env: 'GIT_USER'
+    - versionName: projects/351149464006/secrets/ps-cdf-git-token/versions/2
+      env: 'GIT_TOKEN'

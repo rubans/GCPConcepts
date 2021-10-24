@@ -1,0 +1,5 @@
+GitPython
+Repo
+google-cloud-storage==1.28.0
+jsonpath-ng
+requests

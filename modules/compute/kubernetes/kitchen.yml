@@ -1,0 +1,27 @@
+driver:
+  name: terraform
+  command_timeout: 3000
+  parallelism: 10
+
+provisioner:
+  name: terraform
+
+verifier:
+  name: terraform
+  fail_fast: false
+ 
+platforms:
+  - name: terraform
+
+suites:
+  - name: "default"
+    driver:
+      root_module_directory: test/fixtures/default/
+      variable_files:
+        - test/fixtures/default/variables.tfvars
+    verifier:
+      systems:
+        - name: default
+          backend: gcp
+          reporter:
+          - json:output.json

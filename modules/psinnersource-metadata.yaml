@@ -1,0 +1,24 @@
+name: Google Cloud Accelerator Programme
+description: Terraform based accelerators for building secure Google Cloud environments 
+subGroup: Terraform Google Accelerators
+groupName: Cloud native
+productName: "CAP-Google"
+productOwners:
+  - "David Butland - david.butland@publicissapient.com"
+productBacklogUrl:
+logo: 
+urls: 
+  - shortDescription: Code & Documentation
+    link: https://pscode.lioncloud.net/psinnersource/cloud/gcp-cap/modules
+tags:
+  - "#Terraform"
+  - "#Google"
+  - "#Accelerators"
+endorsements:
+  - "Lloyds Banking Group"
+upcomingFeatures:
+keyContacts:
+  - "david.butland@publicissapient.com"
+  - "jack.stevens@publicissapient.com"
+benefits: Accelerates the building of google cloud platforms with a safe and secure approach
+installationTime: 2 hours
