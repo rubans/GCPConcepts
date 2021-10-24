@@ -1,0 +1,88 @@
+I, [2021-10-11T08:42:15.434876 #37422]  INFO -- Kitchen: -----> Starting Test Kitchen (v2.12.0)
+I, [2021-10-11T08:42:18.624743 #37422]  INFO -- Kitchen: -----> Converging <kt-suite-terraform>...
+E, [2021-10-11T08:42:19.547692 #37422] ERROR -- Kitchen: ------Exception-------
+E, [2021-10-11T08:42:19.547794 #37422] ERROR -- Kitchen: Class: Kitchen::ActionFailed
+E, [2021-10-11T08:42:19.547833 #37422] ERROR -- Kitchen: Message: 1 actions failed.
+>>>>>>     Converge failed on instance <kt-suite-terraform>.  Please see .kitchen/logs/kt-suite-terraform.log for more details
+E, [2021-10-11T08:42:19.547877 #37422] ERROR -- Kitchen: ----------------------
+E, [2021-10-11T08:42:19.547907 #37422] ERROR -- Kitchen: ------Backtrace-------
+E, [2021-10-11T08:42:19.547940 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/command.rb:181:in `report_errors'
+E, [2021-10-11T08:42:19.547973 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/command.rb:172:in `run_action'
+E, [2021-10-11T08:42:19.548002 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/command/action.rb:35:in `block in call'
+E, [2021-10-11T08:42:19.548034 #37422] ERROR -- Kitchen: /usr/local/Cellar/ruby@2.6/2.6.8/lib/ruby/2.6.0/benchmark.rb:293:in `measure'
+E, [2021-10-11T08:42:19.548063 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/command/action.rb:33:in `call'
+E, [2021-10-11T08:42:19.548090 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/cli.rb:52:in `perform'
+E, [2021-10-11T08:42:19.548120 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/cli.rb:198:in `block (2 levels) in <class:CLI>'
+E, [2021-10-11T08:42:19.548149 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/thor-1.1.0/lib/thor/command.rb:27:in `run'
+E, [2021-10-11T08:42:19.548178 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/thor-1.1.0/lib/thor/invocation.rb:127:in `invoke_command'
+E, [2021-10-11T08:42:19.548209 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/thor-1.1.0/lib/thor.rb:392:in `dispatch'
+E, [2021-10-11T08:42:19.548238 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/thor-1.1.0/lib/thor/base.rb:485:in `start'
+E, [2021-10-11T08:42:19.548267 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/bin/kitchen:11:in `block in <top (required)>'
+E, [2021-10-11T08:42:19.548294 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/errors.rb:170:in `with_friendly_errors'
+E, [2021-10-11T08:42:19.548325 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/bin/kitchen:11:in `<top (required)>'
+E, [2021-10-11T08:42:19.548353 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/bin/kitchen:23:in `load'
+E, [2021-10-11T08:42:19.548381 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/bin/kitchen:23:in `<top (required)>'
+E, [2021-10-11T08:42:19.548410 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/bundler-2.2.27/lib/bundler/cli/exec.rb:58:in `load'
+E, [2021-10-11T08:42:19.548440 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/bundler-2.2.27/lib/bundler/cli/exec.rb:58:in `kernel_load'
+E, [2021-10-11T08:42:19.548466 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/bundler-2.2.27/lib/bundler/cli/exec.rb:23:in `run'
+E, [2021-10-11T08:42:19.548495 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/bundler-2.2.27/lib/bundler/cli.rb:477:in `exec'
+E, [2021-10-11T08:42:19.548526 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/bundler-2.2.27/lib/bundler/vendor/thor/lib/thor/command.rb:27:in `run'
+E, [2021-10-11T08:42:19.548555 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/bundler-2.2.27/lib/bundler/vendor/thor/lib/thor/invocation.rb:127:in `invoke_command'
+E, [2021-10-11T08:42:19.548581 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/bundler-2.2.27/lib/bundler/vendor/thor/lib/thor.rb:392:in `dispatch'
+E, [2021-10-11T08:42:19.548628 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/bundler-2.2.27/lib/bundler/cli.rb:31:in `dispatch'
+E, [2021-10-11T08:42:19.548656 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/bundler-2.2.27/lib/bundler/vendor/thor/lib/thor/base.rb:485:in `start'
+E, [2021-10-11T08:42:19.548678 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/bundler-2.2.27/lib/bundler/cli.rb:25:in `start'
+E, [2021-10-11T08:42:19.548705 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/bundler-2.2.27/exe/bundle:49:in `block in <top (required)>'
+E, [2021-10-11T08:42:19.548730 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/bundler-2.2.27/lib/bundler/friendly_errors.rb:128:in `with_friendly_errors'
+E, [2021-10-11T08:42:19.548752 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/bundler-2.2.27/exe/bundle:37:in `<top (required)>'
+E, [2021-10-11T08:42:19.548779 #37422] ERROR -- Kitchen: /usr/local/opt/ruby@2.6/bin/bundle:23:in `load'
+E, [2021-10-11T08:42:19.548801 #37422] ERROR -- Kitchen: /usr/local/opt/ruby@2.6/bin/bundle:23:in `<main>'
+E, [2021-10-11T08:42:19.548824 #37422] ERROR -- Kitchen: ----End Backtrace-----
+E, [2021-10-11T08:42:19.548848 #37422] ERROR -- Kitchen: -Composite Exception--
+E, [2021-10-11T08:42:19.548872 #37422] ERROR -- Kitchen: Class: Kitchen::InstanceFailure
+E, [2021-10-11T08:42:19.548893 #37422] ERROR -- Kitchen: Message: Converge failed on instance <kt-suite-terraform>.  Please see .kitchen/logs/kt-suite-terraform.log for more details
+E, [2021-10-11T08:42:19.548917 #37422] ERROR -- Kitchen: ----------------------
+E, [2021-10-11T08:42:19.548939 #37422] ERROR -- Kitchen: ------Backtrace-------
+E, [2021-10-11T08:42:19.548960 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/kitchen-terraform-6.0.0/lib/kitchen/terraform/raise/action_failed.rb:32:in `call'
+E, [2021-10-11T08:42:19.548981 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/kitchen-terraform-6.0.0/lib/kitchen/provisioner/terraform.rb:85:in `rescue in call'
+E, [2021-10-11T08:42:19.549011 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/kitchen-terraform-6.0.0/lib/kitchen/provisioner/terraform.rb:82:in `call'
+E, [2021-10-11T08:42:19.549033 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:419:in `block in converge_action'
+E, [2021-10-11T08:42:19.549054 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:563:in `synchronize_or_call'
+E, [2021-10-11T08:42:19.549080 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:524:in `block in action'
+E, [2021-10-11T08:42:19.549104 #37422] ERROR -- Kitchen: /usr/local/Cellar/ruby@2.6/2.6.8/lib/ruby/2.6.0/benchmark.rb:293:in `measure'
+E, [2021-10-11T08:42:19.549128 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:523:in `action'
+E, [2021-10-11T08:42:19.549151 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:414:in `converge_action'
+E, [2021-10-11T08:42:19.549173 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:392:in `block (2 levels) in transition_to'
+E, [2021-10-11T08:42:19.549194 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/lifecycle_hooks.rb:47:in `run_with_hooks'
+E, [2021-10-11T08:42:19.549220 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:391:in `block in transition_to'
+E, [2021-10-11T08:42:19.549242 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:390:in `each'
+E, [2021-10-11T08:42:19.549264 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:390:in `transition_to'
+E, [2021-10-11T08:42:19.549303 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:139:in `converge'
+E, [2021-10-11T08:42:19.549326 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/command.rb:195:in `public_send'
+E, [2021-10-11T08:42:19.549348 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/command.rb:195:in `run_action_in_thread'
+E, [2021-10-11T08:42:19.549370 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/command.rb:166:in `block (2 levels) in run_action'
+E, [2021-10-11T08:42:19.549392 #37422] ERROR -- Kitchen: ----End Backtrace-----
+E, [2021-10-11T08:42:19.549415 #37422] ERROR -- Kitchen: ---Nested Exception---
+E, [2021-10-11T08:42:19.549437 #37422] ERROR -- Kitchen: Class: Kitchen::ActionFailed
+E, [2021-10-11T08:42:19.549460 #37422] ERROR -- Kitchen: Message: Running the command `terraform workspace select kitchen-terraform-kt-suite-terraform` failed due to a non-zero exit code of 1.
+E, [2021-10-11T08:42:19.549484 #37422] ERROR -- Kitchen: ----------------------
+E, [2021-10-11T08:42:19.549505 #37422] ERROR -- Kitchen: ------Backtrace-------
+E, [2021-10-11T08:42:19.549529 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/kitchen-terraform-6.0.0/lib/kitchen/terraform/raise/action_failed.rb:32:in `call'
+E, [2021-10-11T08:42:19.549550 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/kitchen-terraform-6.0.0/lib/kitchen/provisioner/terraform.rb:85:in `rescue in call'
+E, [2021-10-11T08:42:19.549572 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/kitchen-terraform-6.0.0/lib/kitchen/provisioner/terraform.rb:82:in `call'
+E, [2021-10-11T08:42:19.549596 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:419:in `block in converge_action'
+E, [2021-10-11T08:42:19.549618 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:563:in `synchronize_or_call'
+E, [2021-10-11T08:42:19.549639 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:524:in `block in action'
+E, [2021-10-11T08:42:19.549663 #37422] ERROR -- Kitchen: /usr/local/Cellar/ruby@2.6/2.6.8/lib/ruby/2.6.0/benchmark.rb:293:in `measure'
+E, [2021-10-11T08:42:19.549685 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:523:in `action'
+E, [2021-10-11T08:42:19.549711 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:414:in `converge_action'
+E, [2021-10-11T08:42:19.549746 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:392:in `block (2 levels) in transition_to'
+E, [2021-10-11T08:42:19.549766 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/lifecycle_hooks.rb:47:in `run_with_hooks'
+E, [2021-10-11T08:42:19.549784 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:391:in `block in transition_to'
+E, [2021-10-11T08:42:19.549801 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:390:in `each'
+E, [2021-10-11T08:42:19.549822 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:390:in `transition_to'
+E, [2021-10-11T08:42:19.549840 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:139:in `converge'
+E, [2021-10-11T08:42:19.549861 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/command.rb:195:in `public_send'
+E, [2021-10-11T08:42:19.549881 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/command.rb:195:in `run_action_in_thread'
+E, [2021-10-11T08:42:19.549899 #37422] ERROR -- Kitchen: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/command.rb:166:in `block (2 levels) in run_action'
+E, [2021-10-11T08:42:19.549930 #37422] ERROR -- Kitchen: ----End Backtrace-----

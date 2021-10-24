@@ -1,0 +1,697 @@
+---
+# Source: jenkins/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: RELEASE-NAME-jenkins
+  namespace: jenkins
+  labels:
+    "app.kubernetes.io/name": 'jenkins'
+    "helm.sh/chart": "jenkins-3.5.9"
+    "app.kubernetes.io/managed-by": "Helm"
+    "app.kubernetes.io/instance": "RELEASE-NAME"
+    "app.kubernetes.io/component": "jenkins-controller"
+type: Opaque
+data:
+  jenkins-admin-password: "c21oa3VmVzkwNWxZZTBORDdhdUY4Rw=="
+  jenkins-admin-user: "YWRtaW4="
+---
+# Source: jenkins/templates/config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: RELEASE-NAME-jenkins
+  namespace: jenkins
+  labels:
+    "app.kubernetes.io/name": 'jenkins'
+    "app.kubernetes.io/managed-by": "Helm"
+    "app.kubernetes.io/instance": "RELEASE-NAME"
+    "app.kubernetes.io/component": "jenkins-controller"
+data:
+  apply_config.sh: |-
+    set -e
+    echo "disable Setup Wizard"
+    # Prevent Setup Wizard when JCasC is enabled
+    echo $JENKINS_VERSION > /var/jenkins_home/jenkins.install.UpgradeWizard.state
+    echo $JENKINS_VERSION > /var/jenkins_home/jenkins.install.InstallUtil.lastExecVersion
+    echo "download plugins"
+    # Install missing plugins
+    cp /var/jenkins_config/plugins.txt /var/jenkins_home;
+    rm -rf /usr/share/jenkins/ref/plugins/*.lock
+    version () { echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; }
+    if [ -f "/usr/share/jenkins/jenkins.war" ] && [ -n "$(command -v jenkins-plugin-cli)" 2>/dev/null ] && [ $(version $(jenkins-plugin-cli --version)) -ge $(version "2.1.1") ]; then
+      jenkins-plugin-cli --war "/usr/share/jenkins/jenkins.war" --plugin-file "/var/jenkins_home/plugins.txt" --latest false;
+    else
+      /usr/local/bin/install-plugins.sh `echo $(cat /var/jenkins_home/plugins.txt)`;
+    fi
+    echo "copy plugins to shared volume"
+    # Copy plugins to shared volume
+    yes n | cp -i /usr/share/jenkins/ref/plugins/* /var/jenkins_plugins/;
+    echo "finished initialization"
+  plugins.txt: |-
+    kubernetes:latest
+    workflow-aggregator:latest
+    workflow-multibranch:latest
+    workflow-basic-steps:latest
+    git:latest
+    configuration-as-code:latest
+    credentials-binding:latest
+    google-oauth-plugin:latest
+    google-source-plugin:latest
+    google-login:latest
+    junit:latest
+    job-dsl:latest
+    pipeline-model-api:latest
+    pipeline-stage-step:latest
+    workflow-durable-task-step:latest
+    pipeline-model-definition:latest
+    configuration-as-code-groovy:latest
+---
+# Source: jenkins/templates/jcasc-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: RELEASE-NAME-jenkins-jenkins-config-pipeline-job
+  namespace: jenkins
+  labels:
+    "app.kubernetes.io/name": jenkins
+    "helm.sh/chart": "jenkins-3.5.9"
+    "app.kubernetes.io/managed-by": "Helm"
+    "app.kubernetes.io/instance": "RELEASE-NAME"
+    "app.kubernetes.io/component": "jenkins-controller"
+    RELEASE-NAME-jenkins-jenkins-config: "true"
+data:
+  pipeline-job.yaml: |-
+    jobs:
+      - script: >                                     
+            multibranchPipelineJob('terraform-big-data-infrastructure') {
+                branchSources {
+                    git {
+                        id = 'terraform-big-data-infrastructure'
+                        remote('https://source.developers.google.com/p/ps-cdf/r/cap-big-data-infrastructure')                                          
+                        credentialsId('source:ps-cdf')
+                    }
+                }
+                orphanedItemStrategy {
+                  discardOldItems {
+                    numToKeep(20)
+                  }
+                }       
+            }            
+      - script: >                                     
+            multibranchPipelineJob('terraform-big-data-jobs') {
+                branchSources {
+                    git {
+                        id = 'terraform-big-data-jobs'
+                        remote('https://source.developers.google.com/p/ps-cdf/r/cap-big-data-jobs')            
+                        credentialsId('source:ps-cdf')
+                    }
+                }
+                orphanedItemStrategy {
+                  discardOldItems {
+                    numToKeep(20)
+                  }
+                }       
+            }            
+      - script: >                                     
+          pipelineJob('pathhfinder') {
+            definition {
+              cpsScm {
+                scm {
+                    git {
+                        remote {
+                            url('https://pscode.lioncloud.net/psinnersource/cloud/gcp-cap/pathfinder.git')
+                            credentials('jenkins')
+                        }
+                    branch('GCPFA-815')
+                  }
+                }
+              }
+            }
+          }
+---
+# Source: jenkins/templates/jcasc-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: RELEASE-NAME-jenkins-jenkins-config-security
+  namespace: jenkins
+  labels:
+    "app.kubernetes.io/name": jenkins
+    "helm.sh/chart": "jenkins-3.5.9"
+    "app.kubernetes.io/managed-by": "Helm"
+    "app.kubernetes.io/instance": "RELEASE-NAME"
+    "app.kubernetes.io/component": "jenkins-controller"
+    RELEASE-NAME-jenkins-jenkins-config: "true"
+data:
+  security.yaml: |-
+    jenkins:
+      securityRealm:
+        local:
+          allowsSignup: false
+          users:
+            - id: "admin"
+              password: "${jenkins-admin-password}"  
+      authorizationStrategy:
+        globalMatrix:
+          grantedPermissions:
+            - "Overall/Read:anonymous"
+            - "Job/Read:anonymous"
+            - "View/Read:anonymous"
+            - "Overall/Administer:authenticated"
+---
+# Source: jenkins/templates/jcasc-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: RELEASE-NAME-jenkins-jenkins-config-user-credential
+  namespace: jenkins
+  labels:
+    "app.kubernetes.io/name": jenkins
+    "helm.sh/chart": "jenkins-3.5.9"
+    "app.kubernetes.io/managed-by": "Helm"
+    "app.kubernetes.io/instance": "RELEASE-NAME"
+    "app.kubernetes.io/component": "jenkins-controller"
+    RELEASE-NAME-jenkins-jenkins-config: "true"
+data:
+  user-credential.yaml: |-
+    credentials:
+      system:
+        domainCredentials:
+        - credentials:
+          - googleRobotPrivateKey:
+              projectId: "ps-cdf"
+              serviceAccountConfig:
+                json:
+                  filename: 'jenkins-sa-key.json'
+                  secretJsonKey: "${filebase64("/Users/pasbonit/Downloads/jenkins-sa-key.json")}"
+          - usernamePassword:
+              id: "jenkins"
+              username: "cloudbuild"
+              password: "qA8x6WQsUN1yWxzD4nxN"
+              description: "git lab use"
+              scope: GLOBAL
+---
+# Source: jenkins/templates/jcasc-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: RELEASE-NAME-jenkins-jenkins-config-welcome-message
+  namespace: jenkins
+  labels:
+    "app.kubernetes.io/name": jenkins
+    "helm.sh/chart": "jenkins-3.5.9"
+    "app.kubernetes.io/managed-by": "Helm"
+    "app.kubernetes.io/instance": "RELEASE-NAME"
+    "app.kubernetes.io/component": "jenkins-controller"
+    RELEASE-NAME-jenkins-jenkins-config: "true"
+data:
+  welcome-message.yaml: |-
+    jenkins:
+      systemMessage: "${message}"
+---
+# Source: jenkins/templates/jcasc-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: RELEASE-NAME-jenkins-jenkins-jcasc-config
+  namespace: jenkins
+  labels:
+    "app.kubernetes.io/name": jenkins
+    "helm.sh/chart": "jenkins-3.5.9"
+    "app.kubernetes.io/managed-by": "Helm"
+    "app.kubernetes.io/instance": "RELEASE-NAME"
+    "app.kubernetes.io/component": "jenkins-controller"
+    RELEASE-NAME-jenkins-jenkins-config: "true"
+data:
+  jcasc-default-config.yaml: |-
+    jenkins:
+      disableRememberMe: false
+      remotingSecurity:
+        enabled: true
+      mode: NORMAL
+      numExecutors: 0
+      projectNamingStrategy: "standard"
+      markupFormatter:
+        plainText
+      clouds:
+      - kubernetes:
+          containerCapStr: "10"
+          defaultsProviderTemplate: ""
+          connectTimeout: "5"
+          readTimeout: "15"
+          jenkinsUrl: "http://RELEASE-NAME-jenkins.jenkins.svc.cluster.local:8080"
+          jenkinsTunnel: "RELEASE-NAME-jenkins-agent.jenkins.svc.cluster.local:50000"
+          maxRequestsPerHostStr: "32"
+          name: "kubernetes"
+          namespace: "jenkins"
+          serverUrl: "https://kubernetes.default"
+          podLabels:
+          - key: "jenkins/RELEASE-NAME-jenkins-agent"
+            value: "true"
+          templates:
+            - name: "default"
+              id: a22052cf28650c281cc5832afe74bc09af72b36cae696bc68ae5b307cd2138b4
+              containers:
+              - name: "jnlp"
+                alwaysPullImage: false
+                args: "^${computer.jnlpmac} ^${computer.name}"
+                command: 
+                envVars:
+                  - envVar:
+                      key: "JENKINS_URL"
+                      value: "http://RELEASE-NAME-jenkins.jenkins.svc.cluster.local:8080/"
+                image: "jenkins/inbound-agent:4.6-1"
+                privileged: "false"
+                resourceLimitCpu: 1
+                resourceLimitMemory: 512Mi
+                resourceRequestCpu: 500m
+                resourceRequestMemory: 256Mi
+                runAsUser: 
+                runAsGroup: 
+                ttyEnabled: false
+                workingDir: /home/jenkins
+              idleMinutes: 0
+              instanceCap: 2147483647
+              label: "RELEASE-NAME-jenkins-agent "
+              nodeUsageMode: "NORMAL"
+              podRetention: Never
+              showRawYaml: true
+              serviceAccount: "default"
+              slaveConnectTimeoutStr: "100"
+              yamlMergeStrategy: override
+      crumbIssuer:
+        standard:
+          excludeClientIPFromCrumb: true
+    security:
+      apiToken:
+        creationOfLegacyTokenEnabled: false
+        tokenGenerationOnCreationEnabled: false
+        usageStatisticsEnabled: true
+    unclassified:
+      location:
+        adminAddress: 
+        url: http://jenkins.dev-foundation.com
+---
+# Source: jenkins/templates/home-pvc.yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: RELEASE-NAME-jenkins
+  namespace: jenkins
+  labels:
+    "app.kubernetes.io/name": 'jenkins'
+    "helm.sh/chart": "jenkins-3.5.9"
+    "app.kubernetes.io/managed-by": "Helm"
+    "app.kubernetes.io/instance": "RELEASE-NAME"
+    "app.kubernetes.io/component": "jenkins-controller"
+spec:
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: "100Gi"
+---
+# Source: jenkins/templates/rbac.yaml
+# This role is used to allow Jenkins scheduling of agents via Kubernetes plugin.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: RELEASE-NAME-jenkins-schedule-agents
+  namespace: jenkins
+  labels:
+    "app.kubernetes.io/name": 'jenkins'
+    "helm.sh/chart": "jenkins-3.5.9"
+    "app.kubernetes.io/managed-by": "Helm"
+    "app.kubernetes.io/instance": "RELEASE-NAME"
+    "app.kubernetes.io/component": "jenkins-controller"
+rules:
+- apiGroups: [""]
+  resources: ["pods", "pods/exec", "pods/log", "persistentvolumeclaims", "events"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["pods", "pods/exec", "persistentvolumeclaims"]
+  verbs: ["create", "delete", "deletecollection", "patch", "update"]
+---
+# Source: jenkins/templates/rbac.yaml
+# The sidecar container which is responsible for reloading configuration changes
+# needs permissions to watch ConfigMaps
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: RELEASE-NAME-jenkins-casc-reload
+  namespace: jenkins
+  labels:
+    "app.kubernetes.io/name": 'jenkins'
+    "helm.sh/chart": "jenkins-3.5.9"
+    "app.kubernetes.io/managed-by": "Helm"
+    "app.kubernetes.io/instance": "RELEASE-NAME"
+    "app.kubernetes.io/component": "jenkins-controller"
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "watch", "list"]
+---
+# Source: jenkins/templates/rbac.yaml
+# We bind the role to the Jenkins service account. The role binding is created in the namespace
+# where the agents are supposed to run.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: RELEASE-NAME-jenkins-schedule-agents
+  namespace: jenkins
+  labels:
+    "app.kubernetes.io/name": 'jenkins'
+    "helm.sh/chart": "jenkins-3.5.9"
+    "app.kubernetes.io/managed-by": "Helm"
+    "app.kubernetes.io/instance": "RELEASE-NAME"
+    "app.kubernetes.io/component": "jenkins-controller"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: RELEASE-NAME-jenkins-schedule-agents
+subjects:
+- kind: ServiceAccount
+  name: ${jenkins-ksa}
+  namespace: jenkins
+---
+# Source: jenkins/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: RELEASE-NAME-jenkins-watch-configmaps
+  namespace: jenkins
+  labels:
+    "app.kubernetes.io/name": 'jenkins'
+    "helm.sh/chart": "jenkins-3.5.9"
+    "app.kubernetes.io/managed-by": "Helm"
+    "app.kubernetes.io/instance": "RELEASE-NAME"
+    "app.kubernetes.io/component": "jenkins-controller"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: RELEASE-NAME-jenkins-casc-reload
+subjects:
+- kind: ServiceAccount
+  name: ${jenkins-ksa}
+  namespace: jenkins
+---
+# Source: jenkins/templates/jenkins-agent-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: RELEASE-NAME-jenkins-agent
+  namespace: jenkins
+  labels:
+    "app.kubernetes.io/name": 'jenkins'
+    "helm.sh/chart": "jenkins-3.5.9"
+    "app.kubernetes.io/managed-by": "Helm"
+    "app.kubernetes.io/instance": "RELEASE-NAME"
+    "app.kubernetes.io/component": "jenkins-controller"
+spec:
+  ports:
+    - port: 50000
+      targetPort: 50000
+      name: agent-listener
+  selector:
+    "app.kubernetes.io/component": "jenkins-controller"
+    "app.kubernetes.io/instance": "RELEASE-NAME"
+  type: ClusterIP
+---
+# Source: jenkins/templates/jenkins-controller-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: RELEASE-NAME-jenkins
+  namespace: jenkins
+  labels:
+    "app.kubernetes.io/name": 'jenkins'
+    "helm.sh/chart": "jenkins-3.5.9"
+    "app.kubernetes.io/managed-by": "Helm"
+    "app.kubernetes.io/instance": "RELEASE-NAME"
+    "app.kubernetes.io/component": "jenkins-controller"
+spec:
+  ports:
+    - port: 8080
+      name: http
+      targetPort: 8080
+  selector:
+    "app.kubernetes.io/component": "jenkins-controller"
+    "app.kubernetes.io/instance": "RELEASE-NAME"
+  type: NodePort
+---
+# Source: jenkins/templates/jenkins-controller-statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: RELEASE-NAME-jenkins
+  namespace: jenkins
+  labels:
+    "app.kubernetes.io/name": 'jenkins'
+    "helm.sh/chart": "jenkins-3.5.9"
+    "app.kubernetes.io/managed-by": "Helm"
+    "app.kubernetes.io/instance": "RELEASE-NAME"
+    "app.kubernetes.io/component": "jenkins-controller"
+spec:
+  serviceName: RELEASE-NAME-jenkins
+  replicas: 1
+  selector:
+    matchLabels:
+      "app.kubernetes.io/component": "jenkins-controller"
+      "app.kubernetes.io/instance": "RELEASE-NAME"
+  template:
+    metadata:
+      labels:
+        "app.kubernetes.io/name": 'jenkins'
+        "app.kubernetes.io/managed-by": "Helm"
+        "app.kubernetes.io/instance": "RELEASE-NAME"
+        "app.kubernetes.io/component": "jenkins-controller"
+      annotations:
+        checksum/config: f6667a82d42bd26f55b9bcb9465a96281b56f00f0bbbbc5f6109130f695a614d
+    spec:
+      securityContext:
+    
+        runAsUser: 1000
+        fsGroup: 1000
+        runAsNonRoot: true
+      serviceAccountName: "${jenkins-ksa}"
+      initContainers:
+        - name: "init"
+          image: "jenkins/jenkins:2.289.3-jdk11"
+          imagePullPolicy: "Always"
+          command: [ "sh", "/var/jenkins_config/apply_config.sh" ]
+          resources:
+            limits:
+              cpu: "1"
+              memory: 3500Mi
+            requests:
+              cpu: 50m
+              memory: 1024Mi
+          volumeMounts:
+            - mountPath: /var/jenkins_home
+              name: jenkins-home
+            - mountPath: /var/jenkins_config
+              name: jenkins-config
+            - mountPath: /usr/share/jenkins/ref/plugins
+              name: plugins
+            - mountPath: /var/jenkins_plugins
+              name: plugin-dir
+      containers:
+        - name: jenkins
+          image: "jenkins/jenkins:2.289.3-jdk11"
+          imagePullPolicy: "Always"
+          args: [ "--httpPort=8080"]
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: JAVA_OPTS
+              value: >-
+                 -Dcasc.reload.token=$(POD_NAME) -Xms3500m -Xmx3500m
+            - name: JENKINS_OPTS
+              value: >-
+                
+            - name: JENKINS_SLAVE_AGENT_PORT
+              value: "50000"
+            - name: CASC_JENKINS_CONFIG
+              value: /var/jenkins_home/casc_configs
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 50000
+              name: agent-listener
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: '/login'
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: '/login'
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+          startupProbe:
+            failureThreshold: 12
+            httpGet:
+              path: '/login'
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+          resources:
+            limits:
+              cpu: "1"
+              memory: 3500Mi
+            requests:
+              cpu: 50m
+              memory: 1024Mi
+          volumeMounts:
+            - mountPath: /var/jenkins_home
+              name: jenkins-home
+              readOnly: false
+            - mountPath: /var/jenkins_config
+              name: jenkins-config
+              readOnly: true
+            - mountPath: /usr/share/jenkins/ref/plugins/
+              name: plugin-dir
+              readOnly: false
+            - name: sc-config-volume
+              mountPath: /var/jenkins_home/casc_configs
+            - name: admin-secret
+              mountPath: /run/secrets/chart-admin-username
+              subPath: jenkins-admin-user
+              readOnly: true
+            - name: admin-secret
+              mountPath: /run/secrets/chart-admin-password
+              subPath: jenkins-admin-password
+              readOnly: true
+        - name: config-reload
+          image: "kiwigrid/k8s-sidecar:1.12.2"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: LABEL
+              value: "RELEASE-NAME-jenkins-jenkins-config"
+            - name: FOLDER
+              value: "/var/jenkins_home/casc_configs"
+            - name: NAMESPACE
+              value: 'jenkins'
+            - name: REQ_URL
+              value: "http://localhost:8080/reload-configuration-as-code/?casc-reload-token=$(POD_NAME)"
+            - name: REQ_METHOD
+              value: "POST"
+            - name: REQ_RETRY_CONNECT
+              value: "10"
+          resources:
+            {}
+          volumeMounts:
+            - name: sc-config-volume
+              mountPath: "/var/jenkins_home/casc_configs"
+            - name: jenkins-home
+              mountPath: /var/jenkins_home
+
+      volumes:
+      - name: plugins
+        emptyDir: {}
+      - name: jenkins-config
+        configMap:
+          name: RELEASE-NAME-jenkins
+      - name: plugin-dir
+        emptyDir: {}
+      - name: jenkins-home
+        persistentVolumeClaim:
+          claimName: RELEASE-NAME-jenkins
+      - name: sc-config-volume
+        emptyDir: {}
+      - name: admin-secret
+        secret:
+          secretName: RELEASE-NAME-jenkins
+---
+# Source: jenkins/templates/jenkins-controller-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: jenkins
+  labels:
+    "app.kubernetes.io/name": 'jenkins'
+    "helm.sh/chart": "jenkins-3.5.9"
+    "app.kubernetes.io/managed-by": "Helm"
+    "app.kubernetes.io/instance": "RELEASE-NAME"
+    "app.kubernetes.io/component": "jenkins-controller"
+  annotations:
+    kubernetes.io/ingress.class: gce-internal
+  name: RELEASE-NAME-jenkins
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: 'RELEASE-NAME-jenkins'
+            port:
+              number: 8080
+        path: /*
+        pathType: ImplementationSpecific
+    host: "jenkins.dev-foundation.com"
+---
+# Source: jenkins/templates/tests/test-config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: RELEASE-NAME-jenkins-tests
+  namespace: jenkins
+  annotations:
+    "helm.sh/hook": test
+data:
+  run.sh: |-
+    @test "Testing Jenkins UI is accessible" {
+      curl --retry 48 --retry-delay 10 RELEASE-NAME-jenkins:8080/login
+    }
+---
+# Source: jenkins/templates/tests/jenkins-test.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "RELEASE-NAME-ui-test-xznfj"
+  namespace: jenkins
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  initContainers:
+    - name: "test-framework"
+      image: "bats/bats:1.2.1"
+      command:
+        - "bash"
+        - "-c"
+      args:
+        - |
+          # copy bats to tools dir
+          set -ex
+          cp -R /opt/bats /tools/bats/
+      volumeMounts:
+      - mountPath: /tools
+        name: tools
+  containers:
+    - name: RELEASE-NAME-ui-test
+      image: jenkins/jenkins:2.289.3-jdk11
+      command: ["/tools/bats/bin/bats", "-t", "/tests/run.sh"]
+      volumeMounts:
+      - mountPath: /tests
+        name: tests
+        readOnly: true
+      - mountPath: /tools
+        name: tools
+  volumes:
+  - name: tests
+    configMap:
+      name: RELEASE-NAME-jenkins-tests
+  - name: tools
+    emptyDir: {}
+  restartPolicy: Never

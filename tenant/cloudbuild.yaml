@@ -1,0 +1,209 @@
+steps:
+  - id: "Terraform Init"
+    name: ubuntu:18.04
+    entrypoint: "bash"
+    args:
+      - '-c'
+      - |
+        echo -e "\n***************************** MODIFY TERRAFORM *****************************"
+        echo "Replace values in the terraform for environment"
+        # replace all ../modules path with git:https url
+        for i in `find -name '*.tf'`; do sed -i -E 's,(\.\.\/)+modules,git::https://source.developers.google.com/p/cap-pipeline-6b84/r/modules,' $i; done;
+        
+        
+        echo -e "\n***************************** INSTALL PYTHON *****************************"
+        apt-get update -qq
+        apt install software-properties-common -y -qq >/dev/null 2>&1
+        apt-get install wget unzip curl git apt-transport-https ca-certificates gnupg -y -qq >/dev/null 2>&1
+        python3 --version
+
+        echo -e "\n***************************** INSTALL TERRAFORM *****************************"
+        wget -q https://releases.hashicorp.com/terraform/1.0.9/terraform_1.0.9_linux_amd64.zip
+        unzip terraform_1.0.9_linux_amd64.zip
+        mv terraform /usr/local/bin/
+        terraform --version
+
+        echo -e "\n***************************** INSTALL GCLOUD *****************************"
+        echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+        curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+        apt-get update -qq
+        apt-get install google-cloud-sdk -y -qq >/dev/null 2>&1
+        gcloud --version
+
+        echo -e "\n***************************** AUTH GCLOUD *****************************"
+        git config --global credential.'https://source.developers.google.com'.helper gcloud.sh
+
+        echo -e "\n***************************** TERRAFORM INIT *****************************"
+        terraform init
+
+  - id: "Debug"
+    name: ubuntu:18.04
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        set -e
+        echo -e "\n***************************** INSTALL PYTHON *****************************"
+        apt-get update -qq
+        apt install software-properties-common -y -qq >/dev/null 2>&1
+        apt-get install wget unzip curl git apt-transport-https ca-certificates gnupg -y -qq >/dev/null 2>&1
+        python3 --version
+
+        echo -e "\n***************************** INSTALL TERRAFORM *****************************"
+        wget -q https://releases.hashicorp.com/terraform/1.0.9/terraform_1.0.9_linux_amd64.zip
+        unzip terraform_1.0.9_linux_amd64.zip
+        mv terraform /usr/local/bin/
+        terraform --version
+
+        echo -e "\n***************************** INSTALL GCLOUD *****************************"
+        echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+        curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+        apt-get update -qq
+        apt-get install google-cloud-sdk -y -qq >/dev/null 2>&1
+        gcloud --version
+
+        # echo -e "\n***************************** DEBUG *****************************"
+        
+        # cat <<EOF > subnet_policy.yaml
+        # bindings:
+        # - members:
+        #   - serviceAccount:359244791841@cloudservices.gserviceaccount.com
+        #   - serviceAccount:service-359244791841@container-engine-robot.iam.gserviceaccount.com
+        #   role: roles/compute.networkUser
+        # etag: ACAB
+        # EOF
+        # cat subnet_policy.yaml
+        # gcloud compute networks subnets --impersonate-service-account org-terraform@prj-b-seed-2400.iam.gserviceaccount.com set-iam-policy cap-pathfinder-d-sub-euw2-baxf \
+        # subnet_policy.yaml \
+        # --project cap-pathfinder-shared-vpc-8104 \
+        # --region europe-west2
+        
+        # gcloud projects --impersonate-service-account org-terraform@prj-b-seed-2400.iam.gserviceaccount.com add-iam-policy-binding cap-pathfinder-shared-vpc-8104 \
+        # --member serviceAccount:service-359244791841@container-engine-robot.iam.gserviceaccount.com \
+        # --role roles/container.hostServiceAgentUser
+        
+        # destroy infra
+        # terraform destroy -auto-approve \
+        # -target module.tenant_base_infra.module.setup_shared_vpc \
+        # -target module.tenant_base_infra.module.project_tenant_workloads \
+        # -target module.tenant_base_infra.module.project_tenant_shared_vpc \
+        # -target module.tenant_base_infra.module.project_tenant_shared_services
+        
+        #terraform state rm module.tenant_base_infra.module.setup_shared_vpc.google_compute_shared_vpc_service_project
+        #terraform destroy -auto-approve -target module.tenant_gke_shared_service_jenkins.module.workload_identity
+
+        echo -e "\n***************************** TERRAFORM PLAN *****************************"
+        terraform plan -lock=false
+        
+        # apt-get install kubectl
+        # gcloud auth list
+        # gcloud auth application-default login -q
+        # gcloud container clusters get-credentials cap-pathfinder-d-gke-euw2-1yhm --region europe-west2 --project cap-pathfinder-shared-svc-d7b6
+        # kubectl get ns
+
+        # apply all
+        #terraform apply -lock=false -auto-approve
+        
+        # always abort
+        exit 1
+
+  - id: "Terraform Plan"
+    name: ubuntu:18.04
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        set -e
+        echo -e "\n***************************** INSTALL PYTHON *****************************"
+        apt-get update -qq
+        apt install software-properties-common -y -qq >/dev/null 2>&1
+        apt-get install wget unzip curl git apt-transport-https ca-certificates gnupg -y -qq >/dev/null 2>&1
+        python3 --version
+
+        echo -e "\n***************************** INSTALL TERRAFORM *****************************"
+        wget -q https://releases.hashicorp.com/terraform/1.0.9/terraform_1.0.9_linux_amd64.zip
+        unzip terraform_1.0.9_linux_amd64.zip
+        mv terraform /usr/local/bin/
+        terraform --version
+
+        echo -e "\n***************************** INSTALL GCLOUD *****************************"
+        echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+        curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+        apt-get update -qq
+        apt-get install google-cloud-sdk -y -qq >/dev/null 2>&1
+        gcloud --version
+
+        echo -e "\n***************************** TERRAFORM PLAN *****************************"
+        terraform plan -lock=false
+
+  - id: "Terraform Apply"
+    name: ubuntu:18.04
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        if [ $BRANCH_NAME == "${_TF_APPLY_BRANCHES}" ]; then
+          echo -e "\n***************************** INSTALL PYTHON *****************************"
+          apt-get update -qq
+          apt install software-properties-common -y -qq >/dev/null 2>&1
+          apt-get install wget unzip curl git apt-transport-https ca-certificates gnupg -y -qq >/dev/null 2>&1
+          python3 --version
+
+          echo -e "\n***************************** INSTALL TERRAFORM *****************************"
+          wget -q https://releases.hashicorp.com/terraform/1.0.9/terraform_1.0.9_linux_amd64.zip
+          unzip terraform_1.0.9_linux_amd64.zip
+          mv terraform /usr/local/bin/
+          terraform --version
+
+          echo -e "\n***************************** INSTALL GCLOUD *****************************"
+          echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+          curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+          apt-get update -qq
+          apt-get install google-cloud-sdk -y -qq >/dev/null 2>&1
+          gcloud --version
+
+          echo -e "\n***************************** INSTALL HELM *****************************"
+          curl https://baltocdn.com/helm/signing.asc | apt-key add -
+          apt-get install apt-transport-https --yes
+          echo "deb https://baltocdn.com/helm/stable/debian/ all main" | tee /etc/apt/sources.list.d/helm-stable-debian.list
+          apt-get update
+          apt-get install helm -y
+          helm version
+
+          echo -e "\n***************************** HELM UPDATE *****************************"
+          helm repo add jenkins https://charts.jenkins.io
+          helm repo update
+
+          echo -e "\n***************************** TERRAFORM APPLY *****************************"
+          terraform apply -lock=false -auto-approve
+        fi
+
+  - id: "Chef InSpec"
+    name: ubuntu:18.04
+    entrypoint: "sh"
+    args:
+      - "-c"
+      - |
+        echo -e "\n***************************** INSTALL PYTHON *****************************"
+        apt-get update -qq
+        apt install software-properties-common -y -qq >/dev/null 2>&1
+        apt-get install wget unzip curl git apt-transport-https ca-certificates gnupg -y -qq >/dev/null 2>&1
+        python3 --version
+
+        echo -e "\n***************************** INSTALL GCLOUD *****************************"
+        echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+        curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
+        apt-get update -qq
+        apt-get install google-cloud-sdk -y -qq >/dev/null 2>&1
+        gcloud --version
+
+        echo -e "\n***************************** AUTH GCLOUD *****************************"
+        git config --global credential.'https://source.developers.google.com'.helper gcloud.sh
+
+        echo -e "\n***************************** INSPEC EXEC *****************************"
+        curl https://omnitruck.chef.io/install.sh | bash -s -- -P inspec
+        gcloud source repos clone compliance-tests --project=$PROJECT_ID
+        inspec exec compliance-tests -t gcp:// --input gcp_project_id=$PROJECT_ID gcp_project_region=europe-west2 gcp_org_id=841579944817 --chef-license accept-silent --reporter cli json:./results1.json;exit 0;
+    env:
+      - 'CHEF_LICENSE=accept-no-persist'
+timeout: 1500s

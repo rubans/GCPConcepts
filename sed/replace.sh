@@ -1,0 +1,1 @@
+sed -i '' -E 's,(\.\.\/)+modules,foo1,' input1.txt

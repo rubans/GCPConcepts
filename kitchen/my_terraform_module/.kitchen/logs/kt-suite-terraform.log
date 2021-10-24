@@ -1,0 +1,65 @@
+I, [2021-10-11T08:42:18.624817 #37422]  INFO -- kt-suite-terraform: -----> Converging <kt-suite-terraform>...
+W, [2021-10-11T08:42:18.625119 #37422]  WARN -- kt-suite-terraform: Reading the Terraform client version...
+I, [2021-10-11T08:42:19.397353 #37422]  INFO -- kt-suite-terraform: Terraform v1.0.7
+I, [2021-10-11T08:42:19.397747 #37422]  INFO -- kt-suite-terraform: on darwin_amd64
+I, [2021-10-11T08:42:19.398026 #37422]  INFO -- kt-suite-terraform: 
+I, [2021-10-11T08:42:19.398068 #37422]  INFO -- kt-suite-terraform: Your version of Terraform is out of date! The latest version
+I, [2021-10-11T08:42:19.398096 #37422]  INFO -- kt-suite-terraform: is 1.0.8. You can update by downloading from https://www.terraform.io/downloads.html
+W, [2021-10-11T08:42:19.413895 #37422]  WARN -- kt-suite-terraform: Finished reading the Terraform client version.
+W, [2021-10-11T08:42:19.414022 #37422]  WARN -- kt-suite-terraform: Verifying the Terraform client version is in the supported interval of >= 0.11.4, < 1.1.0...
+W, [2021-10-11T08:42:19.414170 #37422]  WARN -- kt-suite-terraform: Finished verifying the Terraform client version.
+W, [2021-10-11T08:42:19.414239 #37422]  WARN -- kt-suite-terraform: Selecting the kitchen-terraform-kt-suite-terraform Terraform workspace...
+I, [2021-10-11T08:42:19.526724 #37422]  INFO -- kt-suite-terraform: [31m
+I, [2021-10-11T08:42:19.526905 #37422]  INFO -- kt-suite-terraform: Workspace "kitchen-terraform-kt-suite-terraform" doesn't exist.
+I, [2021-10-11T08:42:19.526936 #37422]  INFO -- kt-suite-terraform: 
+I, [2021-10-11T08:42:19.526959 #37422]  INFO -- kt-suite-terraform: You can create this workspace with the "new" subcommand.[0m[0m
+E, [2021-10-11T08:42:19.541916 #37422] ERROR -- kt-suite-terraform: Running the command `terraform workspace select kitchen-terraform-kt-suite-terraform` failed due to a non-zero exit code of 1.
+E, [2021-10-11T08:42:19.542296 #37422] ERROR -- kt-suite-terraform: Converge failed on instance <kt-suite-terraform>.
+E, [2021-10-11T08:42:19.542603 #37422] ERROR -- kt-suite-terraform: ------Exception-------
+E, [2021-10-11T08:42:19.542652 #37422] ERROR -- kt-suite-terraform: Class: Kitchen::ActionFailed
+E, [2021-10-11T08:42:19.542686 #37422] ERROR -- kt-suite-terraform: Message: Running the command `terraform workspace select kitchen-terraform-kt-suite-terraform` failed due to a non-zero exit code of 1.
+E, [2021-10-11T08:42:19.542718 #37422] ERROR -- kt-suite-terraform: ----------------------
+E, [2021-10-11T08:42:19.542746 #37422] ERROR -- kt-suite-terraform: ------Backtrace-------
+E, [2021-10-11T08:42:19.542773 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/kitchen-terraform-6.0.0/lib/kitchen/terraform/raise/action_failed.rb:32:in `call'
+E, [2021-10-11T08:42:19.542801 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/kitchen-terraform-6.0.0/lib/kitchen/provisioner/terraform.rb:85:in `rescue in call'
+E, [2021-10-11T08:42:19.542829 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/kitchen-terraform-6.0.0/lib/kitchen/provisioner/terraform.rb:82:in `call'
+E, [2021-10-11T08:42:19.542857 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:419:in `block in converge_action'
+E, [2021-10-11T08:42:19.542885 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:563:in `synchronize_or_call'
+E, [2021-10-11T08:42:19.542916 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:524:in `block in action'
+E, [2021-10-11T08:42:19.542945 #37422] ERROR -- kt-suite-terraform: /usr/local/Cellar/ruby@2.6/2.6.8/lib/ruby/2.6.0/benchmark.rb:293:in `measure'
+E, [2021-10-11T08:42:19.542971 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:523:in `action'
+E, [2021-10-11T08:42:19.542999 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:414:in `converge_action'
+E, [2021-10-11T08:42:19.543051 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:392:in `block (2 levels) in transition_to'
+E, [2021-10-11T08:42:19.543078 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/lifecycle_hooks.rb:47:in `run_with_hooks'
+E, [2021-10-11T08:42:19.543104 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:391:in `block in transition_to'
+E, [2021-10-11T08:42:19.543131 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:390:in `each'
+E, [2021-10-11T08:42:19.543155 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:390:in `transition_to'
+E, [2021-10-11T08:42:19.543178 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:139:in `converge'
+E, [2021-10-11T08:42:19.543200 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/command.rb:195:in `public_send'
+E, [2021-10-11T08:42:19.543225 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/command.rb:195:in `run_action_in_thread'
+E, [2021-10-11T08:42:19.543338 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/command.rb:166:in `block (2 levels) in run_action'
+E, [2021-10-11T08:42:19.543364 #37422] ERROR -- kt-suite-terraform: ----End Backtrace-----
+E, [2021-10-11T08:42:19.543386 #37422] ERROR -- kt-suite-terraform: ---Nested Exception---
+E, [2021-10-11T08:42:19.543409 #37422] ERROR -- kt-suite-terraform: Class: Kitchen::TransientFailure
+E, [2021-10-11T08:42:19.543431 #37422] ERROR -- kt-suite-terraform: Message: Running the command `terraform workspace select kitchen-terraform-kt-suite-terraform` failed due to a non-zero exit code of 1.
+E, [2021-10-11T08:42:19.543452 #37422] ERROR -- kt-suite-terraform: ----------------------
+E, [2021-10-11T08:42:19.543474 #37422] ERROR -- kt-suite-terraform: ------Backtrace-------
+E, [2021-10-11T08:42:19.543497 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/kitchen-terraform-6.0.0/lib/kitchen/terraform/raise/action_failed.rb:32:in `call'
+E, [2021-10-11T08:42:19.543522 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/kitchen-terraform-6.0.0/lib/kitchen/provisioner/terraform.rb:85:in `rescue in call'
+E, [2021-10-11T08:42:19.543546 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/kitchen-terraform-6.0.0/lib/kitchen/provisioner/terraform.rb:82:in `call'
+E, [2021-10-11T08:42:19.543570 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:419:in `block in converge_action'
+E, [2021-10-11T08:42:19.543596 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:563:in `synchronize_or_call'
+E, [2021-10-11T08:42:19.543621 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:524:in `block in action'
+E, [2021-10-11T08:42:19.543645 #37422] ERROR -- kt-suite-terraform: /usr/local/Cellar/ruby@2.6/2.6.8/lib/ruby/2.6.0/benchmark.rb:293:in `measure'
+E, [2021-10-11T08:42:19.543668 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:523:in `action'
+E, [2021-10-11T08:42:19.543691 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:414:in `converge_action'
+E, [2021-10-11T08:42:19.543714 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:392:in `block (2 levels) in transition_to'
+E, [2021-10-11T08:42:19.543740 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/lifecycle_hooks.rb:47:in `run_with_hooks'
+E, [2021-10-11T08:42:19.543779 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:391:in `block in transition_to'
+E, [2021-10-11T08:42:19.543804 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:390:in `each'
+E, [2021-10-11T08:42:19.543829 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:390:in `transition_to'
+E, [2021-10-11T08:42:19.543852 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/instance.rb:139:in `converge'
+E, [2021-10-11T08:42:19.543879 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/command.rb:195:in `public_send'
+E, [2021-10-11T08:42:19.543904 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/command.rb:195:in `run_action_in_thread'
+E, [2021-10-11T08:42:19.543928 #37422] ERROR -- kt-suite-terraform: /usr/local/lib/ruby/gems/2.6.0/gems/test-kitchen-2.12.0/lib/kitchen/command.rb:166:in `block (2 levels) in run_action'
+E, [2021-10-11T08:42:19.543951 #37422] ERROR -- kt-suite-terraform: ----End Backtrace-----

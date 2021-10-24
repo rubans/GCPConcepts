@@ -1,0 +1,62 @@
+# TODO verify security standards
+resource "kubernetes_pod_security_policy" "jenkins-psp" {
+  metadata {
+    name = "jenkins-psp"
+  }
+  spec {
+    privileged                 = false
+    allow_privilege_escalation = false
+
+    volumes = [
+      "*",
+    ]
+
+    run_as_user {
+      rule = "RunAsAny"
+    }
+
+    se_linux {
+      rule = "RunAsAny"
+    }
+
+    supplemental_groups {
+      rule = "RunAsAny"
+    }
+
+    fs_group {
+      rule = "RunAsAny"
+    }
+  }
+}
+
+
+resource "kubernetes_cluster_role" "jenkins-role" {
+  metadata {
+    name = "jenkins-clusterrole"
+  }
+
+  rule {
+    api_groups = ["policy"]
+    resources = ["podsecuritypolicies"]
+    resource_names = [kubernetes_pod_security_policy.jenkins-psp.metadata[0].name]
+    verbs      = ["use"]
+  }
+}
+
+resource "kubernetes_role_binding" "jenkins-role-binding" {
+  metadata {
+    name      = "jenkins-role-binding"
+    namespace = kubernetes_namespace.jenkins-namespace.metadata[0].name
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = kubernetes_cluster_role.jenkins-role.metadata[0].name
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = kubernetes_service_account.jenkins-ksa.metadata[0].name 
+    namespace = kubernetes_namespace.jenkins-namespace.metadata[0].name
+  }
+
+}

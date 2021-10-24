@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: workload-identity-test
+  namespace: jenkins
+spec:
+  containers:
+  - image: google/cloud-sdk:slim
+    name: workload-identity-test
+    command: ["sleep","infinity"]
+  serviceAccountName: jenkins
+
+
+# gcloud iam service-accounts add-iam-policy-binding     --role roles/iam.workloadIdentityUser     --member "serviceAccount:cap-dev-sandbox-bb7d.svc.id.goog[enkins/jenkins]"    jenkins-sa@cap-dev-sandbox-bb7d.iam.gserviceaccount.com
+
+
+
+
+#   kubectl annotate serviceaccount     --namespace jenkins jenkins     iam.gke.io/gcp-service-account=jenkins-sa@cap-dev-sandbox-bb7d.iam.gserviceaccount.com
+
+# terraform plan -var="jenkins_admin_password=pwd" -var="json_credential_file=main.tf" -var="workload_identity_user=jenkins" -var="workload_identity_namespace=jenkins" -var="network=gke-network" -var="subnetwork=gke-subnet"

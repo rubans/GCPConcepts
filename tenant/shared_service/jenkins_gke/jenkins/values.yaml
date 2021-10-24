@@ -1,0 +1,206 @@
+controller:
+  installPlugins:
+    - kubernetes:latest
+    - workflow-aggregator:latest
+    - workflow-multibranch:latest
+    - workflow-basic-steps:latest
+    - git:latest
+    - configuration-as-code:latest
+    # - kubernetes:latest
+    - credentials-binding:latest
+    - google-oauth-plugin:latest
+    - google-source-plugin:latest
+    # - google-kubernetes-engine:latest
+    - google-login:latest
+    - junit:latest
+    # - google-storage-plugin:latest
+    - job-dsl:latest
+    - pipeline-model-api:latest
+    - pipeline-stage-step:latest
+    - workflow-durable-task-step:latest
+    - pipeline-model-definition:latest
+    # - configuration-as-code:latest
+    - configuration-as-code-groovy:latest
+    # - configuration-as-code-support:latest
+  JCasC:
+    enabled: true
+    configScripts:
+        welcome-message: |
+          jenkins:
+            systemMessage: "${message}"
+        security: |
+          jenkins:
+            securityRealm:
+              local:
+                allowsSignup: false
+                users:
+                  - id: "admin"
+                    password: "${jenkins-admin-password}"  
+            authorizationStrategy:
+              globalMatrix:
+                grantedPermissions:
+                  - "Overall/Read:anonymous"
+                  - "Job/Read:anonymous"
+                  - "View/Read:anonymous"
+                  - "Overall/Administer:authenticated"
+        pipeline-job: | 
+          jobs:
+            - script: >                                     
+                  multibranchPipelineJob('terraform-big-data-infrastructure') {
+                      branchSources {
+                          git {
+                              id = 'terraform-big-data-infrastructure'
+                              remote('https://source.developers.google.com/p/ps-cdf/r/cap-big-data-infrastructure')                                          
+                              credentialsId('source:ps-cdf')
+                          }
+                      }
+                      orphanedItemStrategy {
+                        discardOldItems {
+                          numToKeep(20)
+                        }
+                      }       
+                  }            
+            - script: >                                     
+                  multibranchPipelineJob('terraform-big-data-jobs') {
+                      branchSources {
+                          git {
+                              id = 'terraform-big-data-jobs'
+                              remote('https://source.developers.google.com/p/ps-cdf/r/cap-big-data-jobs')            
+                              credentialsId('source:ps-cdf')
+                          }
+                      }
+                      orphanedItemStrategy {
+                        discardOldItems {
+                          numToKeep(20)
+                        }
+                      }       
+                  }            
+            - script: >                                     
+                pipelineJob('pathhfinder') {
+                  definition {
+                    cpsScm {
+                      scm {
+                          git {
+                              remote {
+                                  url('https://pscode.lioncloud.net/psinnersource/cloud/gcp-cap/pathfinder.git')
+                                  credentials('jenkins')
+                              }
+                          branch('GCPFA-815')
+                        }
+                      }
+                    }
+                  }
+                }
+        user-credential: |
+          credentials:
+            system:
+              domainCredentials:
+              - credentials:
+                - googleRobotPrivateKey:
+                    projectId: "ps-cdf"
+                    serviceAccountConfig:
+                      json:
+                        filename: 'jenkins-sa-key.json'
+                        
+                - usernamePassword:
+                    id: "jenkins"
+                    username: "cloudbuild"
+                    password: "qA8x6WQsUN1yWxzD4nxN"
+                    description: "git lab use"
+                    scope: GLOBAL
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "1024Mi"
+    limits:
+      cpu: "1"
+      memory: "3500Mi"
+  javaOpts: "-Xms3500m -Xmx3500m"
+  serviceType: NodePort
+  servicePort: 8080
+  ingress:
+    enabled: true
+    # Override for the default paths that map requests to the backend
+    # For Kubernetes v1.14+, use 'networking.k8s.io/v1beta1'
+    # For Kubernetes v1.19+, use 'networking.k8s.io/v1'
+    apiVersion: "networking.k8s.io/v1"
+    paths: 
+    # - backend:
+    #     serviceName: "pasquale"
+    #     servicePort: 9000
+    - path: "/*"
+      pathType: ImplementationSpecific
+      backend:
+        service:
+          name: >-
+            {{ template "jenkins.fullname" . }}
+        # Don't use string here, use only integer value!
+          port:
+            number: 8080
+    labels: {}
+    annotations: 
+      kubernetes.io/ingress.class: "gce-internal"
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
+    # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
+    # ingressClassName: nginx
+    # Set this path to jenkinsUriPrefix above or use annotations to rewrite path
+    # path: "/jenkins"
+    # configures the hostname e.g. jenkins.example.com
+    hostName: "jenkins.dev-foundation.com"
+    tls:
+    # - secretName: jenkins.cluster.local
+    #   hosts:
+    #     - jenkins.cluster.local
+
+  # often you want to have your controller all locked down and private
+  # but you still want to get webhooks from your SCM
+  # A secondary ingress will let you expose different urls
+  # with a differnt configuration
+  secondaryingress:
+    enabled: false
+    # paths you want forwarded to the backend
+    # ex /github-webhook
+    paths: []
+    # For Kubernetes v1.14+, use 'networking.k8s.io/v1beta1'
+    # For Kubernetes v1.19+, use 'networking.k8s.io/v1'
+    apiVersion: "extensions/v1beta1"
+    labels: {}
+    annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
+    # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
+    # ingressClassName: nginx
+    # configures the hostname e.g. jenkins-external.example.com
+    hostName:
+    tls:
+    # - secretName: jenkins-external.example.com
+    #   hosts:
+    #     - jenkins-external.example.com
+
+  # If you're running on GKE and need to configure a backendconfig
+  # to finish ingress setup, use the following values.
+  # Docs: https://cloud.google.com/kubernetes-engine/docs/concepts/backendconfig
+  backendconfig:
+    enabled: false
+    apiVersion: "extensions/v1beta1"
+    name:
+    labels: {}
+    annotations: {}
+    spec: {}
+
+agent:
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "256Mi"
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+persistence:
+  size: 100Gi
+serviceAccount:
+  name: "${jenkins-ksa}"
+  create: false
